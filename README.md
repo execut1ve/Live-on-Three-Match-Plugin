@@ -1,6 +1,7 @@
 # Live on Three Match Plugin
 - ver - 1.5.0 (2018/03/4)
 - author - execut1ve (twitter.com/execut1ve)
+**注意：開発者はプログラミング初心者で言語知識もほとんどありませんので色々と大目に見てください**
 
 # サポート
 - 両チームの準備完了宣言による試合開始
