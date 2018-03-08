@@ -1,6 +1,6 @@
-Live on Three Match Plugin
-ver - 1.5.0 (2018/03/4)
-author - execut1ve (twitter.com/execut1ve)
+# Live on Three Match Plugin
+- ver - 1.5.0 (2018/03/4)
+- author - execut1ve (twitter.com/execut1ve)
 
 # サポート
 - 両チームの準備完了宣言による試合開始
@@ -157,4 +157,4 @@ GOTV demo自動録画をマップ開始時に行う設定 (0=無効, 1=有効)
 
 ## 1.0.0 (2017/07/18)
 - 初版
-"# Live-on-Three-Match-Plugin" 
+"# Live-on-Three-Match-Plugin"
