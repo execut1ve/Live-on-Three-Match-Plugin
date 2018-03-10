@@ -7,7 +7,7 @@ public Plugin:myinfo =
     name = "Live on Three Match Plugin",
     author = "execut1ve",
     description = "CS:GO Match Plugin (Tournament Support)",
-    version = "1.5.0",
+    version = "1.5.1",
     url = "https://lo3.jp"
 };
 
@@ -86,6 +86,7 @@ public OnMapEnd() {
     delete(g_MapMenu);
     g_MapMenu = null;
   }
+  nowphase = 0;
 }
 
 Menu BuildMapMenu() {
@@ -194,6 +195,7 @@ public ev_cs_match_end_restart(Handle:event, const String:name[], bool:dontBroad
   if ( GetConVarInt(cvar_lo3_record_start_map) == 0 ) {
     ServerCommand("tv_stoprecord");
   }
+  nowphase = 0;
   reset_stat();
   ServerCommand("mp_warmup_start");
 }
