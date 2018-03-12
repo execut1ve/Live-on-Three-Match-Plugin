@@ -7,7 +7,7 @@ public Plugin:myinfo =
     name = "Live on Three Match Plugin",
     author = "execut1ve",
     description = "CS:GO Match Plugin (Tournament Support)",
-    version = "1.5.1",
+    version = "1.5.2",
     url = "https://lo3.jp"
 };
 
@@ -16,6 +16,7 @@ new Handle:cvar_lo3_kniferound_enabled;
 new Handle:cvar_lo3_tournament_mode;
 new Handle:cvar_lo3_match_config;
 new Handle:cvar_lo3_record_start_map;
+new Handle:cvar_lo3_tv_force_disable;
 new Handle:cvar_tv_enable;
 new Handle:cvar_tv_autorecord;
 new Handle:message_timer;
@@ -52,22 +53,31 @@ public OnPluginStart() {
   RegConsoleCmd("say_team", Command_Say);
   RegConsoleCmd("menu_changemap", Command_ChangeMap);
   cvar_sv_coaching_enabled = FindConVar("sv_coaching_enabled");
-  cvar_lo3_kniferound_enabled = CreateConVar( "lo3_kniferound_enabled", "0", "If non-zero, enable kniferound" );
-  cvar_lo3_tournament_mode = CreateConVar( "lo3_tournament_mode", "0", "If non-zero, disabled swap and scramble" );
-  cvar_lo3_match_config = CreateConVar( "lo3_match_config", "lo3_tournament.cfg", "execute configs on live" );
-  cvar_lo3_record_start_map = CreateConVar( "lo3_record_start_map", "0", "If non-zero, GOTV demo start recording when map started");
+  cvar_lo3_kniferound_enabled = CreateConVar("lo3_kniferound_enabled", "0", "If non-zero, enable kniferound" );
+  cvar_lo3_tournament_mode = CreateConVar("lo3_tournament_mode", "0", "If non-zero, disabled swap and scramble" );
+  cvar_lo3_match_config = CreateConVar("lo3_match_config", "lo3_tournament.cfg", "execute configs on live" );
+  cvar_lo3_record_start_map = CreateConVar("lo3_record_start_map", "0", "If non-zero, GOTV demo start recording when map started");
+  cvar_lo3_tv_force_disable = CreateConVar("lo3_record_disable", "0", "If non-zero, disable GOTV")
+  cvar_tv_enable = FindConVar("tv_enable");
   cvar_tv_autorecord = FindConVar("tv_autorecord");
+  HookConVarChange(cvar_tv_enable, Force_TV_Enable);
   HookConVarChange(cvar_tv_autorecord, Force_AutoRecord_Disable);
   HookEvent("round_end", ev_round_end);
   HookEvent("round_start", ev_round_start);
   HookEvent("round_freeze_end", ev_round_freeze_end);
   HookEvent("cs_match_end_restart", ev_cs_match_end_restart);
 }
+public Force_TV_Enable(Handle:cvar, const String:oldVal[], const String:newVal[]) {
+    if ( GetConVarInt(cvar_lo3_tv_force_disable) == 0 ) {
+      SetConVarInt(cvar, 1);
+    }
+    else {
+      SetConVarInt(cvar, 0);
+    }
+}
 
-public Force_AutoRecord_Disable(Handle:cvar, const String:oldVal[], const String:newVal[])
-{
-    PrintToServer("tv_autorecord is forced to 0");
-    SetConVarInt(cvar, 0);//forced to 0
+public Force_AutoRecord_Disable(Handle:cvar, const String:oldVal[], const String:newVal[]) {
+    SetConVarInt(cvar, 0);
 }
 
 public OnMapStart() {
@@ -77,7 +87,7 @@ public OnMapStart() {
   g_MapMenu = BuildMapMenu();
   nowphase = 0;
   if ( GetConVarInt(cvar_lo3_record_start_map) == 1 ) {
-    CreateTimer(1.0, StartRecord);
+    CreateTimer(5.0, StartRecord);
   }
 }
 
