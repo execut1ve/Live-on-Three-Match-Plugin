@@ -7,7 +7,7 @@ public Plugin:myinfo =
     name = "Live on Three Match Plugin",
     author = "execut1ve",
     description = "CS:GO Match Plugin (Tournament Support)",
-    version = "1.5.2",
+    version = "1.5.3",
     url = "https://lo3.jp"
 };
 
@@ -66,6 +66,7 @@ public OnPluginStart() {
   HookEvent("round_start", ev_round_start);
   HookEvent("round_freeze_end", ev_round_freeze_end);
   HookEvent("cs_match_end_restart", ev_cs_match_end_restart);
+  HookEvent("switch_team", ev_switch_team);
 }
 public Force_TV_Enable(Handle:cvar, const String:oldVal[], const String:newVal[]) {
     if ( GetConVarInt(cvar_lo3_tv_force_disable) == 0 ) {
@@ -210,6 +211,12 @@ public ev_cs_match_end_restart(Handle:event, const String:name[], bool:dontBroad
   ServerCommand("mp_warmup_start");
 }
 
+public ev_switch_team(Handle:event, const String:name[], bool:dontBroadcast) {
+  if ( GameRules_GetProp("m_bWarmupPeriod") == 1 ) {
+    CreateTimer(1.0, kickbot)
+  }
+}
+
 public int Menu_ChangeMap(Menu menu, MenuAction action, int param1, int param2) {
   if (action == MenuAction_Select) {
     char info[32];
@@ -307,6 +314,10 @@ public Action:Command_Say(client, args) {
   else if (StrEqual(text,"!16r")) {
     clinchunvote(client);
   }
+}
+
+public Action:kickbot(Handle:timer) {
+  ServerCommand("bot_kick");
 }
 
 public Action:knife_reset(Handle:timer) {

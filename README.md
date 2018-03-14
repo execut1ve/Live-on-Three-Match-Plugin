@@ -1,5 +1,5 @@
 # Live on Three Match Plugin
-- ver - 1.5.2 (2018/03/12)
+- ver - 1.5.3 (2018/03/14)
 - author - execut1ve (twitter.com/execut1ve)
 
 
@@ -110,6 +110,9 @@ GOTVを強制的にオフにする設定 (0=無効, 1=有効)
 
 
 # バージョン履歴
+## 1.5.3 (2018/03/14)
+- ウォームアップ時にbotが入ってきたら強制的にキックするようにした
+
 ## 1.5.2 (2018/03/12)
 - lo3_record_start_map "1"のときGOTV demoが録画されない場合がある問題を修正
 - 将来的な展開に備えてcvar「lo3_tv_force_disable」を追加
