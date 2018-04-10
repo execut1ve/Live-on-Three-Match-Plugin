@@ -7,7 +7,7 @@ public Plugin:myinfo =
     name = "Live on Three Match Plugin",
     author = "execut1ve",
     description = "CS:GO Match Plugin (Tournament Support)",
-    version = "1.5.5",
+    version = "1.5.6",
     url = "https://lo3.jp"
 };
 
@@ -148,11 +148,11 @@ public ev_round_end(Handle:event, const String:name[], bool:dontBroadcast) {
     int winner = GetEventInt(event, "winner"); //2=T,3=CT
 
     if ( winner == 2 ){
-      PrintToChatAll("[\x04LO3\x01] Tチームがナイフラウンドに勝利しました");
+      PrintToChatAll("[\x04LO3\x01] Terrorsit がナイフラウンドに勝利しました");
       knife_winteam = 1;
     }
     if ( winner == 3 ){
-      PrintToChatAll("[\x04LO3\x01] CTチームがナイフラウンドに勝利しました");
+      PrintToChatAll("[\x04LO3\x01] CT がナイフラウンドに勝利しました");
       knife_winteam = 2;
     }
 
@@ -331,58 +331,73 @@ public Action:message_ready(Handle:timer) {
     if ( !ready_t && !ready_ct )  {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("両チームの <font color='#00ff00'>!ready</font> を待っています\n現在の設定は ラウンド消化なし です\n<font color='#00ff00'>!30r</font> でフルラウンドを希望できます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> :");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("両チームの <font color='#00ff00'>!ready</font> を待っています\n<u>T がフルラウンドを希望しています</u>\nCT の <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> : Terrorist");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("両チームの <font color='#00ff00'>!ready</font> を待っています\n<u>CT がフルラウンドを希望しています</u>\nT の <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> : CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("両チームの <font color='#00ff00'>!ready</font> を待っています\n現在の設定は <u>フルラウンド</u> です\n<font color='#00ff00'>!16r</font> でキャンセルできます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
-        PrintHintTextToAll("両チームの <font color='#00ff00'>!ready</font> を待っています");
+        if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\nKnifeRound : なし");
+        }
+        else {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\nKnifeRound : あり");
+        }
       }
     }
     else if ( ready_t && !ready_ct ) {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("CT の <font color='#00ff00'>!ready</font> を待っています\n現在の設定は ラウンド消化なし です\n<font color='#00ff00'>!30r</font> でフルラウンドを希望できます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> :");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("CT の <font color='#00ff00'>!ready</font> を待っています\n<u>T がフルラウンドを希望しています</u>\nCTの <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> : Terrorist");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("CT の <font color='#00ff00'>!ready</font> を待っています\n<u>CT がフルラウンドを希望しています</u>\nT の <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> : CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("CT の <font color='#00ff00'>!ready</font> を待っています\n現在の設定は <u>フルラウンド</u> です\n<font color='#00ff00'>!16r</font> でキャンセルできます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
-        PrintHintTextToAll("T は準備完了しています\nCT の <font color='#00ff00'>!ready</font> を待っています");
+        if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\nKnifeRound : なし");
+        }
+        else {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\nKnifeRound : あり");
+        }
       }
       }
     else if ( !ready_t && ready_ct ) {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("T の <font color='#00ff00'>!ready</font> を待っています\n現在の設定は ラウンド消化なし です\n<font color='#00ff00'>!30r</font> でフルラウンドを希望できます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> :");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("T の <font color='#00ff00'>!ready</font> を待っています\n<u>T がフルラウンドを希望しています</u>\nCT の <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> : Terrorist");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("T の <font color='#00ff00'>!ready</font> を待っています\n<u>CT がフルラウンドを希望しています</u>\nT の <font color='#00ff00'>!30r</font> でフルラウンドになります");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> : CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("T の <font color='#00ff00'>!ready</font> を待っています\n現在の設定は <u>フルラウンド</u> です\n<font color='#00ff00'>!16r</font> でキャンセルできます");
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
-        PrintHintTextToAll("CT は準備完了しています \nT の <font color='#00ff00'>!ready</font> を待っています");
+        if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\nKnifeRound : なし");
+        }
+        else {
+          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\nKnifeRound : あり");
+        }
       }
     }
   }
@@ -392,13 +407,13 @@ public Action:message_ready(Handle:timer) {
 public Action:message_pause(Handle:timer) {
   for(int i = 1;i <= MaxClients; i++) {
     if ( !unpaused_t && !unpaused_ct ) {
-      PrintHintTextToAll("ポーズ状態になっています \n解除するには両チームが <font color='#00ff00'>!unpause</font> と発言してください");
+      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> :");
     }
     else if ( unpaused_t && !unpaused_ct )  {
-      PrintHintTextToAll("Tチームがポーズを解除する準備を完了しました \n解除するにはCTチームが <font color='#00ff00'>!unpause</font> と発言してください");
+      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> : Terrorist");
     }
     else if ( !unpaused_t && unpaused_ct ) {
-      PrintHintTextToAll("CTチームがポーズを解除する準備を完了しました \n解除するにはTチームが <font color='#00ff00'>!unpause</font> と発言してください");
+      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> : CT");
     }
   }
   return Plugin_Continue;
@@ -424,10 +439,10 @@ public Action:message_knifelive(Handle:timer) {
 public Action:message_knifechoose(Handle:timer) {
   for(int i = 1;i <= MaxClients; i++) {
     if ( knife_winteam == 1 ) {
-      PrintHintText(i,"Tチームがナイフラウンドに勝利しました \nチームを変更する場合は <font color='#00ff00'>!switch</font> \nチームを変更しない場合は <font color='#00ff00'>!stay</font> と発言してください");
+      PrintHintText(i,"KnifeRound Winner : Terrorist\nCommand : <font color='#00ff00'>!switch</font> / <font color='#00ff00'>!stay</font>");
     }
     else if ( knife_winteam == 2 )  {
-      PrintHintText(i,"CTチームがナイフラウンドに勝利しました \nチームを変更する場合は <font color='#00ff00'>!switch</font> \nチームを変更しない場合は <font color='#00ff00'>!stay</font> と発言してください");
+      PrintHintText(i,"KnifeRound Winner : CT\nCommand : <font color='#00ff00'>!switch</font> / <font color='#00ff00'>!stay</font>");
     }
   }
   return Plugin_Continue;
@@ -538,10 +553,10 @@ public ready(client) {
       message_timer = null;
     }
     else if ( ready_t && !ready_ct ) {
-      PrintToChatAll("[\x04LO3\x01] Tチームの準備が完了しました");
+      PrintToChatAll("[\x04LO3\x01] Terrorist の準備が完了しました");
     }
     else if ( !ready_t && ready_ct ) {
-      PrintToChatAll("[\x04LO3\x01] CTチームの準備が完了しました");
+      PrintToChatAll("[\x04LO3\x01] CT の準備が完了しました");
     }
   }
 }
@@ -551,11 +566,11 @@ public unready(client) {
     new team = GetClientTeam(client);
 
     if (team == CS_TEAM_T) {
-      PrintToChatAll("[\x04LO3\x01] Tチームの準備完了状態が解除されました");
+      PrintToChatAll("[\x04LO3\x01] Terrorsit の準備完了状態が解除されました");
       ready_t = false;
     }
     else if (team == CS_TEAM_CT) {
-      PrintToChatAll("[\x04LO3\x01] CTチームの準備完了状態が解除されました");
+      PrintToChatAll("[\x04LO3\x01] CT の準備完了状態が解除されました");
       ready_ct = false;
     }
   }
@@ -567,10 +582,10 @@ public pause(client) {
     new team = GetClientTeam(client);
 
     if (team == CS_TEAM_T) {
-      PrintToChatAll("[\x04LO3\x01] Tチームがポーズを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] Terrorist がポーズを宣言しました");
     }
     else if (team == CS_TEAM_CT) {
-      PrintToChatAll("[\x04LO3\x01] CTチームがポーズを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] CT がポーズを宣言しました");
     }
     ServerCommand("mp_pause_match");
     if ( message_timer == null ) {
@@ -603,10 +618,10 @@ public unpause(client) {
       unpaused_ct = false;
     }
     else if ( unpaused_t && !unpaused_ct ) {
-      PrintToChatAll("[\x04LO3\x01] Tチームがポーズを解除する準備を完了しました");
+      PrintToChatAll("[\x04LO3\x01] Terrorsit がポーズを解除する準備を完了しました");
     }
     else if ( !unpaused_t && unpaused_ct ) {
-      PrintToChatAll("[\x04LO3\x01] CTチームがポーズを解除する準備を完了しました");
+      PrintToChatAll("[\x04LO3\x01] CT がポーズを解除する準備を完了しました");
     }
   }
 }
@@ -623,12 +638,12 @@ public timeout(client) {
 
     if ( team == CS_TEAM_T ) {
       ServerCommand("timeout_terrorist_start");
-      PrintToChatAll("[\x04LO3\x01] Tチームがタイムアウトを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] Terrorit がタイムアウトを宣言しました");
       timeouted = true;
     }
     else if ( team == CS_TEAM_CT ) {
       ServerCommand("timeout_ct_start");
-      PrintToChatAll("[\x04LO3\x01] CTチームがタイムアウトを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] CT がタイムアウトを宣言しました");
       timeouted = true;
     }
   }
@@ -724,13 +739,13 @@ public matchstop(client) {
         PrintToChatAll("[\x04LO3\x01] \x02試合が中断されました");
       }
       else if ( matchstop_t && !matchstop_ct ) {
-        PrintToChatAll("[\x04LO3\x01] \x02Tチームが試合の終了を希望しています");
-        PrintToChatAll("[\x04LO3\x01] 試合を終了するにはCTチームが \x02!stop \x01と発言してください");
+        PrintToChatAll("[\x04LO3\x01] \x02Terrorist が試合の強制中断を希望しています");
+        PrintToChatAll("[\x04LO3\x01] 試合を中断するにはCTチームが \x02!stop \x01と発言してください");
         PrintToChatAll("[\x04LO3\x01] このステータスはラウンド終了時にリセットされます");
       }
       else if ( !matchstop_t && matchstop_ct ) {
-        PrintToChatAll("[\x04LO3\x01] \x02CTチームが試合の終了を希望しています");
-        PrintToChatAll("[\x04LO3\x01] 試合を終了するにはTチームが \x02!stop \x01と発言してください");
+        PrintToChatAll("[\x04LO3\x01] \x02CT が試合の強制終了を希望しています");
+        PrintToChatAll("[\x04LO3\x01] 試合を中断するにはTチームが \x02!stop \x01と発言してください");
         PrintToChatAll("[\x04LO3\x01] このステータスはラウンド終了時にリセットされます");
       }
     }
@@ -752,7 +767,7 @@ public knife_switch(client) {
       KillTimer(message_timer);
       message_timer = null;
       ServerCommand("mp_swapteams")
-      PrintToChatAll("[\x04LO3\x01] チームがスワップされます");
+      PrintToChatAll("[\x04LO3\x01] チームが変更されます");
       PrintToChatAll("[\x04LO3\x01] \x0410秒後に試合が開始されます");
       nowphase = 4;
     }
@@ -760,7 +775,7 @@ public knife_switch(client) {
       KillTimer(message_timer);
       message_timer = null;
       ServerCommand("mp_swapteams")
-      PrintToChatAll("[\x04LO3\x01] チームがスワップされます");
+      PrintToChatAll("[\x04LO3\x01] チームが変更されます");
       PrintToChatAll("[\x04LO3\x01] \x0410秒後に試合が開始されます");
       nowphase = 4;
     }
@@ -811,7 +826,7 @@ public swap(client) {
   if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
     if ( nowphase == 0 ) {
       ServerCommand("mp_swapteams")
-      PrintToChatAll("[\x04LO3\x01] チームがスワップされます");
+      PrintToChatAll("[\x04LO3\x01] チームが変更されます");
     }
     else {
       PrintToChatAll("[\x04LO3\x01] ウォームアップ中のみ実行できます");
