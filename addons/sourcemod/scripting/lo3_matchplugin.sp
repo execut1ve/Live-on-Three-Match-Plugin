@@ -787,6 +787,7 @@ public minigameunvote(client) {
       }
     }
   }
+}
 
 public matchstop(client) {
   if ( nowphase != 0 ) {
