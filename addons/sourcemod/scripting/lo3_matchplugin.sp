@@ -550,7 +550,7 @@ public ready(client) {
         demorecord_ready = true;
       }
       ServerCommand("mp_warmup_start");
-      if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 1 ) {
+      if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 1 && GetConVarInt(cvar_lo3_tournament_mode) == 1 ) {
         PrintToChatAll("[\x04LO3\x01] 両チームの準備が完了しました");
         PrintToChatAll("[\x04LO3\x01] \x0410秒後にナイフラウンドが開始されます");
         reset_stat();
