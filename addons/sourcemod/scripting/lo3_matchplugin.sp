@@ -7,7 +7,7 @@ public Plugin:myinfo =
     name = "Live on Three Match Plugin",
     author = "execut1ve",
     description = "CS:GO Match Plugin (Tournament Support)",
-    version = "1.5.6",
+    version = "1.5.7",
     url = "https://lo3.jp"
 };
 
@@ -45,6 +45,9 @@ new bool:demorecord_ready = false;
 new bool:clinchvote_t = false;
 new bool:clinchvote_ct = false;
 
+new bool:minigamevote_t = false;
+new bool:minigamevote_ct = false;
+
 Menu g_MapMenu = null;
 
 
@@ -57,7 +60,7 @@ public OnPluginStart() {
   cvar_lo3_tournament_mode = CreateConVar("lo3_tournament_mode", "0", "If non-zero, disabled swap and scramble" );
   cvar_lo3_match_config = CreateConVar("lo3_match_config", "lo3_tournament.cfg", "execute configs on live" );
   cvar_lo3_record_start_map = CreateConVar("lo3_record_start_map", "0", "If non-zero, GOTV demo start recording when map started");
-  cvar_lo3_tv_force_disable = CreateConVar("lo3_record_disable", "0", "If non-zero, disable GOTV")
+  cvar_lo3_tv_force_disable = CreateConVar("lo3_tv_force_disable", "0", "If non-zero, disable GOTV");
   cvar_tv_enable = FindConVar("tv_enable");
   cvar_tv_autorecord = FindConVar("tv_autorecord");
   HookConVarChange(cvar_tv_enable, Force_TV_Enable);
@@ -148,7 +151,7 @@ public ev_round_end(Handle:event, const String:name[], bool:dontBroadcast) {
     int winner = GetEventInt(event, "winner"); //2=T,3=CT
 
     if ( winner == 2 ){
-      PrintToChatAll("[\x04LO3\x01] Terrorsit がナイフラウンドに勝利しました");
+      PrintToChatAll("[\x04LO3\x01] T がナイフラウンドに勝利しました");
       knife_winteam = 1;
     }
     if ( winner == 3 ){
@@ -271,6 +274,9 @@ public Action:Command_Say(client, args) {
   else if (StrEqual(text, "!r")) {
     ready(client);
   }
+  else if (StrEqual(text, "!gaben")) {
+    ready(client);
+  }
   else if (StrEqual(text, "!unready")) {
     unready(client);
   }
@@ -315,6 +321,12 @@ public Action:Command_Say(client, args) {
   else if (StrEqual(text,"!16r")) {
     clinchunvote(client);
   }
+  else if (StrEqual(text,"!mg")) {
+    minigamevote(client);
+  }
+  else if (StrEqual(text,"!unmg")) {
+    minigameunvote(client);
+  }
 }
 
 public Action:kickbot(Handle:timer) {
@@ -331,72 +343,72 @@ public Action:message_ready(Handle:timer) {
     if ( !ready_t && !ready_ct )  {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> :");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\n<font color='#00ff00'>!30r</font> |");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> : Terrorist");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\n<font color='#00ff00'>!30r</font> | T");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n<font color='#00ff00'>!30r</font> : CT");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\n<font color='#00ff00'>!30r</font> | CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\n!30r | T / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
         if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\nKnifeRound : なし");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\nKnifeRound | なし");
         }
         else {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> :\nKnifeRound : あり");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> |\nKnifeRound | あり");
         }
       }
     }
     else if ( ready_t && !ready_ct ) {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> :");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\n<font color='#00ff00'>!30r</font> |");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> : Terrorist");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\n<font color='#00ff00'>!30r</font> | T");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n<font color='#00ff00'>!30r</font> : CT");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\n<font color='#00ff00'>!30r</font> | CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\n!30r | T / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
         if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\nKnifeRound : なし");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\nKnifeRound | なし");
         }
         else {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : Terrorist\nKnifeRound : あり");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | T\nKnifeRound | あり");
         }
       }
       }
     else if ( !ready_t && ready_ct ) {
       if ( GetConVarInt(cvar_lo3_tournament_mode) == 0 ) {
         if ( !clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> :");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\n<font color='#00ff00'>!30r</font> |");
         }
         else if ( clinchvote_t && !clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> : Terrorist");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\n<font color='#00ff00'>!30r</font> | T");
         }
         else if ( !clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n<font color='#00ff00'>!30r</font> : CT");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\n<font color='#00ff00'>!30r</font> | CT");
         }
         else if ( clinchvote_t && clinchvote_ct ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\n!30r : Terrorist / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\n!30r | T / CT\n<font color='#00ff00'>!16r</font> でキャンセル");
         }
       }
       else {
         if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 0 ) {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\nKnifeRound : なし");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\nKnifeRound | なし");
         }
         else {
-          PrintHintTextToAll("<font color='#00ff00'>!ready</font> : CT\nKnifeRound : あり");
+          PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!ready</font> | CT\nKnifeRound | あり");
         }
       }
     }
@@ -407,13 +419,13 @@ public Action:message_ready(Handle:timer) {
 public Action:message_pause(Handle:timer) {
   for(int i = 1;i <= MaxClients; i++) {
     if ( !unpaused_t && !unpaused_ct ) {
-      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> :");
+      PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!unpause</font> |");
     }
     else if ( unpaused_t && !unpaused_ct )  {
-      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> : Terrorist");
+      PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!unpause</font> | T");
     }
     else if ( !unpaused_t && unpaused_ct ) {
-      PrintHintTextToAll("<font color='#00ff00'>!unpause</font> : CT");
+      PrintHintTextToAll("使用可能コマンド :\n<font color='#00ff00'>!unpause</font> | CT");
     }
   }
   return Plugin_Continue;
@@ -439,7 +451,7 @@ public Action:message_knifelive(Handle:timer) {
 public Action:message_knifechoose(Handle:timer) {
   for(int i = 1;i <= MaxClients; i++) {
     if ( knife_winteam == 1 ) {
-      PrintHintText(i,"KnifeRound Winner : Terrorist\nCommand : <font color='#00ff00'>!switch</font> / <font color='#00ff00'>!stay</font>");
+      PrintHintText(i,"KnifeRound Winner : T\nCommand : <font color='#00ff00'>!switch</font> / <font color='#00ff00'>!stay</font>");
     }
     else if ( knife_winteam == 2 )  {
       PrintHintText(i,"KnifeRound Winner : CT\nCommand : <font color='#00ff00'>!switch</font> / <font color='#00ff00'>!stay</font>");
@@ -494,6 +506,7 @@ public reset_stat() {
   ServerCommand("mp_t_default_secondary weapon_glock");
   ServerCommand("mp_ct_default_secondary weapon_hkp2000");
   ServerCommand("mp_free_armor 0");
+  ServerCommand("mp_maxmoney 16000")
   ServerCommand("mp_startmoney 800");
   ServerCommand("mp_warmup_pausetimer 1");
   ServerCommand("mp_warmuptime_all_players_connected 0");
@@ -511,6 +524,14 @@ public reset_stat() {
   if ( clinchvote_t && clinchvote_ct ) {
     ServerCommand("mp_match_can_clinch 0");
   }
+  clinchvote_t = false;
+  clinchvote_ct = false;
+  if ( minigamevote_t && minigamevote_ct ) {
+    ServerCommand("mp_startmoney 10000");
+    ServerCommand("mp_maxrounds 6");
+  }
+  minigamevote_t = false;
+  minigamevote_ct = false;
 }
 
 public ready(client) {
@@ -529,7 +550,7 @@ public ready(client) {
         demorecord_ready = true;
       }
       ServerCommand("mp_warmup_start");
-      if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 1 ) {
+      if ( GetConVarInt(cvar_lo3_kniferound_enabled) == 1 && GetConVarInt(cvar_lo3_tournament_mode) == 1 ) {
         PrintToChatAll("[\x04LO3\x01] 両チームの準備が完了しました");
         PrintToChatAll("[\x04LO3\x01] \x0410秒後にナイフラウンドが開始されます");
         reset_stat();
@@ -553,7 +574,7 @@ public ready(client) {
       message_timer = null;
     }
     else if ( ready_t && !ready_ct ) {
-      PrintToChatAll("[\x04LO3\x01] Terrorist の準備が完了しました");
+      PrintToChatAll("[\x04LO3\x01] T の準備が完了しました");
     }
     else if ( !ready_t && ready_ct ) {
       PrintToChatAll("[\x04LO3\x01] CT の準備が完了しました");
@@ -582,7 +603,7 @@ public pause(client) {
     new team = GetClientTeam(client);
 
     if (team == CS_TEAM_T) {
-      PrintToChatAll("[\x04LO3\x01] Terrorist がポーズを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] T がポーズを宣言しました");
     }
     else if (team == CS_TEAM_CT) {
       PrintToChatAll("[\x04LO3\x01] CT がポーズを宣言しました");
@@ -638,7 +659,7 @@ public timeout(client) {
 
     if ( team == CS_TEAM_T ) {
       ServerCommand("timeout_terrorist_start");
-      PrintToChatAll("[\x04LO3\x01] Terrorit がタイムアウトを宣言しました");
+      PrintToChatAll("[\x04LO3\x01] T がタイムアウトを宣言しました");
       timeouted = true;
     }
     else if ( team == CS_TEAM_CT ) {
@@ -719,6 +740,55 @@ public clinchunvote(client) {
   }
 }
 
+public minigamevote(client) {
+  if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
+    if ( nowphase == 0 )  {
+      new team = GetClientTeam(client);
+
+      if ( team == CS_TEAM_T ) {
+        minigamevote_t = true;
+        if ( !minigamevote_ct ) {
+          PrintToChatAll("[\x04LO3\x01] T が MiniGameMode を希望しています");
+        }
+        else {
+          PrintToChatAll("[\x04LO3\x01] 両チームが MiniGameMode に同意しました");
+          PrintToChatAll("[\x04LO3\x01] 試合は MiniGameMode で行われます");
+        }
+      }
+      else if ( team == CS_TEAM_CT ) {
+        minigamevote_ct = true;
+        if ( !minigamevote_t ) {
+          PrintToChatAll("[\x04LO3\x01] CT が MiniGameMode を希望しています");
+        }
+        else {
+          PrintToChatAll("[\x04LO3\x01] 両チームが MiniGameMode に同意しました");
+          PrintToChatAll("[\x04LO3\x01] 試合は MiniGameMode で行われます");
+        }
+      }
+    }
+  }
+  else {
+    PrintToChatAll("[\x04LO3\x01] 許可されていないコマンドです");
+  }
+}
+
+public minigameunvote(client) {
+  if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
+    if ( nowphase == 0 )  {
+      new team = GetClientTeam(client);
+
+      if ( team == CS_TEAM_T ) {
+        minigamevote_t = false;
+        PrintToChatAll("[\x04LO3\x01] T が MiniGameMode の希望を取りやめました");
+      }
+      else if ( team == CS_TEAM_CT ) {
+        minigamevote_ct = false;
+        PrintToChatAll("[\x04LO3\x01] CT が MiniGameMode の希望を取りやめました");
+      }
+    }
+  }
+}
+
 public matchstop(client) {
   if ( nowphase != 0 ) {
     if ( GetConVarInt(cvar_lo3_tournament_mode) == 1) {
@@ -739,7 +809,7 @@ public matchstop(client) {
         PrintToChatAll("[\x04LO3\x01] \x02試合が中断されました");
       }
       else if ( matchstop_t && !matchstop_ct ) {
-        PrintToChatAll("[\x04LO3\x01] \x02Terrorist が試合の強制中断を希望しています");
+        PrintToChatAll("[\x04LO3\x01] \x02T が試合の強制中断を希望しています");
         PrintToChatAll("[\x04LO3\x01] 試合を中断するにはCTチームが \x02!stop \x01と発言してください");
         PrintToChatAll("[\x04LO3\x01] このステータスはラウンド終了時にリセットされます");
       }
@@ -810,8 +880,10 @@ public knife_stay(client) {
 public scramble(client) {
   if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
     if ( nowphase == 0 ) {
-      ServerCommand("mp_scrambleteams")
-      PrintToChatAll("[\x04LO3\x01] チームがシャッフルされます");
+      PrintToChatAll("[\x04LO3\x01] チームが3回シャッフルされます");
+      CreateTimer(2.0, scrambleteams);
+      CreateTimer(2.0, scrambleteams);
+      CreateTimer(2.0, scrambleteams);
     }
     else {
       PrintToChatAll("[\x04LO3\x01] ウォームアップ中のみ実行できます");
@@ -819,6 +891,17 @@ public scramble(client) {
   }
   else {
     PrintToChatAll("[\x04LO3\x01] 許可されていないコマンドです");
+  }
+}
+
+public Action:scrambleteams(Handle:timer) {
+  static cnt = 1;
+  PrintToChatAll("[\x04LO3\x01] チームがあと%d回シャッフルされます", cnt++);
+  ServerCommand("mp_scrambleteams");
+
+  if(cnt >= 4)
+  {
+      cnt = 1;
   }
 }
 
