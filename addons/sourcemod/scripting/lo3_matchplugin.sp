@@ -274,6 +274,9 @@ public Action:Command_Say(client, args) {
   else if (StrEqual(text, "!r")) {
     ready(client);
   }
+  else if (StrEqual(text, "!gaben")) {
+    ready(client);
+  }
   else if (StrEqual(text, "!unready")) {
     unready(client);
   }
