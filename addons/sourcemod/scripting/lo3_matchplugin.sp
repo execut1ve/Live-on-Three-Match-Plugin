@@ -810,8 +810,10 @@ public knife_stay(client) {
 public scramble(client) {
   if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
     if ( nowphase == 0 ) {
-      ServerCommand("mp_scrambleteams")
-      PrintToChatAll("[\x04LO3\x01] チームがシャッフルされます");
+      PrintToChatAll("[\x04LO3\x01] チームが3回シャッフルされます");
+      CreateTimer(2.0, scrambleteams);
+      CreateTimer(2.0, scrambleteams);
+      CreateTimer(2.0, scrambleteams);
     }
     else {
       PrintToChatAll("[\x04LO3\x01] ウォームアップ中のみ実行できます");
@@ -819,6 +821,17 @@ public scramble(client) {
   }
   else {
     PrintToChatAll("[\x04LO3\x01] 許可されていないコマンドです");
+  }
+}
+
+public Action:scrambleteams(Handle:timer) {
+  static cnt = 1;
+  PrintToChatAll("[\x04LO3\x01] チームがあと%d回シャッフルされます", cnt++);
+  ServerCommand("mp_scrambleteams");
+
+  if(cnt >= 4)
+  {
+      cnt = 1;
   }
 }
 
