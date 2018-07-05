@@ -45,6 +45,9 @@ new bool:demorecord_ready = false;
 new bool:clinchvote_t = false;
 new bool:clinchvote_ct = false;
 
+new bool:minigamevote_t = false;
+new bool:minigamevote_ct = false;
+
 Menu g_MapMenu = null;
 
 
@@ -315,6 +318,12 @@ public Action:Command_Say(client, args) {
   else if (StrEqual(text,"!16r")) {
     clinchunvote(client);
   }
+  else if (StrEqual(text,"!mg")) {
+    minigamevote(client);
+  }
+  else if (StrEqual(text,"!unmg")) {
+    minigameunvote(client);
+  }
 }
 
 public Action:kickbot(Handle:timer) {
@@ -494,6 +503,7 @@ public reset_stat() {
   ServerCommand("mp_t_default_secondary weapon_glock");
   ServerCommand("mp_ct_default_secondary weapon_hkp2000");
   ServerCommand("mp_free_armor 0");
+  ServerCommand("mp_maxmoney 16000")
   ServerCommand("mp_startmoney 800");
   ServerCommand("mp_warmup_pausetimer 1");
   ServerCommand("mp_warmuptime_all_players_connected 0");
@@ -511,6 +521,14 @@ public reset_stat() {
   if ( clinchvote_t && clinchvote_ct ) {
     ServerCommand("mp_match_can_clinch 0");
   }
+  clinchvote_t = false;
+  clinchvote_ct = false;
+  if ( minigamevote_t && minigamevote_ct ) {
+    ServerCommand("mp_startmoney 10000");
+    ServerCommand("mp_maxrounds 6");
+  }
+  minigamevote_t = false;
+  minigamevote_ct = false;
 }
 
 public ready(client) {
@@ -718,6 +736,54 @@ public clinchunvote(client) {
     PrintToChatAll("[\x04LO3\x01] 許可されていないコマンドです");
   }
 }
+
+public minigamevote(client) {
+  if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
+    if ( nowphase == 0 )  {
+      new team = GetClientTeam(client);
+
+      if ( team == CS_TEAM_T ) {
+        minigamevote_t = true;
+        if ( !minigamevote_ct ) {
+          PrintToChatAll("[\x04LO3\x01] T が MiniGameMode を希望しています");
+        }
+        else {
+          PrintToChatAll("[\x04LO3\x01] 両チームが MiniGameMode に同意しました");
+          PrintToChatAll("[\x04LO3\x01] 試合は MiniGameMode で行われます");
+        }
+      }
+      else if ( team == CS_TEAM_CT ) {
+        minigamevote_ct = true;
+        if ( !minigamevote_t ) {
+          PrintToChatAll("[\x04LO3\x01] CT が MiniGameMode を希望しています");
+        }
+        else {
+          PrintToChatAll("[\x04LO3\x01] 両チームが MiniGameMode に同意しました");
+          PrintToChatAll("[\x04LO3\x01] 試合は MiniGameMode で行われます");
+        }
+      }
+    }
+  }
+  else {
+    PrintToChatAll("[\x04LO3\x01] 許可されていないコマンドです");
+  }
+}
+
+public minigameunvote(client) {
+  if ( GetConVarInt(cvar_lo3_tournament_mode) == 0) {
+    if ( nowphase == 0 )  {
+      new team = GetClientTeam(client);
+
+      if ( team == CS_TEAM_T ) {
+        minigamevote_t = false;
+        PrintToChatAll("[\x04LO3\x01] T が MiniGameMode の希望を取りやめました");
+      }
+      else if ( team == CS_TEAM_CT ) {
+        minigamevote_ct = false;
+        PrintToChatAll("[\x04LO3\x01] CT が MiniGameMode の希望を取りやめました");
+      }
+    }
+  }
 
 public matchstop(client) {
   if ( nowphase != 0 ) {
