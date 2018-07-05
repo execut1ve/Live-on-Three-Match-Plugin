@@ -57,7 +57,7 @@ public OnPluginStart() {
   cvar_lo3_tournament_mode = CreateConVar("lo3_tournament_mode", "0", "If non-zero, disabled swap and scramble" );
   cvar_lo3_match_config = CreateConVar("lo3_match_config", "lo3_tournament.cfg", "execute configs on live" );
   cvar_lo3_record_start_map = CreateConVar("lo3_record_start_map", "0", "If non-zero, GOTV demo start recording when map started");
-  cvar_lo3_tv_force_disable = CreateConVar("lo3_tv_force_disable", "0", "If non-zero, disable GOTV")
+  cvar_lo3_tv_force_disable = CreateConVar("lo3_tv_force_disable", "0", "If non-zero, disable GOTV");
   cvar_tv_enable = FindConVar("tv_enable");
   cvar_tv_autorecord = FindConVar("tv_autorecord");
   HookConVarChange(cvar_tv_enable, Force_TV_Enable);
